@@ -1,33 +1,44 @@
-$(document).ready(function() {
+$(document).ready(function(){
     var lightArray = ["luke", "obi", "yoda"];
+    var lightHealth = [125, 155, 200];
     var darkArray = ["maul", "vader", "sidious"];
+    var darkHealth = [130, 170, 190];
 
     // function to display the light side characters
     function displayLight(){
-      for(var i = 0; i < lightArray.length; i +=1){
-        var lightChar = $("<img>");
-        lightChar.attr("class", "select light");
-        lightChar.attr("id", lightArray[i]);
-        lightChar.attr("src", "assets/images/" + lightArray[i] + ".png");
-        $("#charSel").append(lightChar);
-      };
+        for(var i = 0; i < lightArray.length; i +=1){
+            var lightDiv = $("<div>");
+            lightDiv.text("HP: " + lightHealth[i]);
+            lightDiv.attr("id", lightArray[i]);
+            lightDiv.attr("class", "col-md-4 select light");
+            lightDiv.attr("hp", lightHealth[i]);
+            $("#charSel").append(lightDiv);
+            var lightChar = $("<img>");
+            lightChar.attr("src", "assets/images/" + lightArray[i] + ".png");
+            $("#" + lightArray[i]).append(lightChar);
+        };
     };
 
     // function to display the dark side characters
     function displayDark(){
-      for(var i = 0; i < darkArray.length; i +=1){
-        var darkChar = $("<img>");
-        darkChar.attr("class", "select dark");
-        darkChar.attr("id", darkArray[i]);
-        darkChar.attr("src", "assets/images/" + darkArray[i] + ".png");
-        $("#charSel").append(darkChar);
-      };
+        for(var i = 0; i < darkArray.length; i +=1){
+            var darkDiv = $("<div>");
+            darkDiv.text("HP: " + darkHealth[i]);
+            darkDiv.attr("id", darkArray[i]);
+            darkDiv.attr("class", "col-md-4 select dark")
+            darkDiv.attr("hp", darkHealth[i]);
+            $("#charSel").append(darkDiv);
+            var darkChar = $("<img>");
+            darkChar.attr("src", "assets/images/" + darkArray[i] + ".png");
+            $("#" + darkArray[i]).append(darkChar);
+        };
     };
 
     // add the initial headings and available characters
     var selHead = $("<h2>");
     selHead.text("Select your Character");
     $("#charSel").append(selHead);
+
     var lightHead = $("<h3>");
     lightHead.attr("id", "lightChar");
     lightHead.text("Light Side");
@@ -48,11 +59,16 @@ $(document).ready(function() {
         $("#fight").append(fightHead);
 
         // add the selected character to the fighting location
+        var charDiv = $("<div>");
+        charDiv.attr("id", "charDiv")
+        charDiv.attr("class", "col-md-4 fighter");
+        charDiv.attr("hp", $(this).attr("hp"));
+        charDiv.text("HP: " + $(this).attr("hp"));
+        $("#fight").append(charDiv);
         var charSel = $("<img>");
         charSel.attr("id", "character");
-        // charSel.attr("class", $(this).attr("class"));
         charSel.attr("src", "assets/images/" + $(this).attr("id") + ".png");
-        $("#fight").append(charSel);
+        $("#charDiv").append(charSel);
 
         // empty the character selection location and display the available opponents
         $("#charSel").empty();
@@ -76,13 +92,26 @@ $(document).ready(function() {
 
         // select the opponent
         $(".select").on("click", function() {
-            var oppoSel = $("<img>");
-            oppoSel.attr("id", "opponent");
-            // oppoSel.attr("class", $(this).attr("class"));
-            oppoSel.attr("src", "assets/images/" + $(this).attr("id") + ".png");
-            // oppoSel.text($(this).attr("id"));
-            $("#fight").append(oppoSel);
-            $("#"+$(this).attr("id")).remove();
+            var numberFighters;
+            $("#fight").each(function(){
+                numberFighters = $(".fighter", this).length;
+            });
+            if (numberFighters === 2){
+                alert("You already have an opponent! Click attack to continue.")
+            }
+            else {
+                var oppoDiv = $("<div>");
+                oppoDiv.attr("id", "oppoDiv")
+                oppoDiv.attr("class", "col-md-4 fighter");
+                oppoDiv.attr("hp", $(this).attr("hp"));
+                oppoDiv.text("HP: " + $(this).attr("hp"));
+                $("#fight").append(oppoDiv);    
+                var oppoSel = $("<img>");
+                oppoSel.attr("id", "opponent");
+                oppoSel.attr("src", "assets/images/" + $(this).attr("id") + ".png");
+                $("#oppoDiv").append(oppoSel);
+                $("#"+$(this).attr("id")).remove();
+            };
         });
 
         // add the attack button
@@ -95,14 +124,14 @@ $(document).ready(function() {
         $("#attack").on("click", function() {
             var numberFighters;
             $("#fight").each(function(){
-            numberFighters = $(".select", this).length;
+                numberFighters = $(".fighter", this).length;
             });
             if (numberFighters === 1){
                 alert("You don't have an opponent! Click an opponent to continue.")
             }
             else {
                 alert("You won!");
-                $("#opponent").remove();
+                $("#oppoDiv").remove();
                 selHead.text("Select your next Opponent");
                 $("#charSel").prepend(selHead);
                 var numberOpponents;
