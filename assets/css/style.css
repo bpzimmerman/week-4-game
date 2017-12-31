@@ -1,9 +1,55 @@
+@font-face{
+    font-family: starWars;
+    src: url(Starjout.ttf);
+}
+
+* {
+    font-family: starWars;
+    color: gray;
+}
+
+body{
+    background: url("../images/deathstar.png");
+    background-size: 100%;
+    background-color: black;
+}
+
 h1 {
+    font-size: 42px;
     text-align: center;
+}
+
+h2 {
+    margin: 10px 0 0 0;
 }
 
 img {
     max-width: 100%;
     height: auto;
-    /* padding: 0.75vw; */
+}
+
+.select p, .fighter p{
+    margin: 0;
+}
+
+#results p{
+    margin: 5px 0 5px 0;
+}
+
+#ctrlButton{
+    padding-top: 10px;
+}
+
+#versus{
+    font-size: 2vw;
+    text-align: center;
+    padding-top: 7vw;
+}
+
+@media screen and (max-width: 992px) {
+    
+    #versus{
+        padding-top: 0;
+    }
+
 }
