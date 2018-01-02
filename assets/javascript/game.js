@@ -170,15 +170,12 @@ $(document).ready(function(){
                 var oppoHealth = $("<p>");
                 oppoHealth.text("HP: " + oppoHP);
                 $("#oppoDiv").append(oppoHealth);
-                // append the opponent image to the fighting location and remove it from the selecting location
+                // append the opponent image to the fighting location and remove the opponent div from the selecting location
                 var oppoSel = $("<img>");
                 oppoSel.attr("id", "opponent");
                 oppoSel.attr("src", "assets/images/" + $(this).attr("id") + ".png");
                 $("#oppoDiv").append(oppoSel);
                 $("#"+$(this).attr("id")).remove();
-                console.log(ap);
-                console.log(apInc);
-                console.log(ca);
             };
         });
 
@@ -190,9 +187,7 @@ $(document).ready(function(){
 
         // attack button function
         $("#attack").on("click", function() {
-            console.log(charHP);
-            console.log(oppoHP);
-            // verify that there both fighters have been selected
+            // verify that both fighters have been selected
             var numberFighters;
             $("#fight").each(function(){
                 numberFighters = $(".fighter", this).length;
@@ -213,6 +208,7 @@ $(document).ready(function(){
                     $("#oppoDiv").remove();
                     selHead.text("Select your next Opponent");
                     $("#charSel").prepend(selHead);
+                    // check to see if you have defeated all the opponents
                     var numberOpponents = $(".select").length;
                     if (numberOpponents === 0){
                         gameover();
