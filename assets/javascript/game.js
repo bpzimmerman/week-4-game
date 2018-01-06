@@ -51,17 +51,30 @@ $(document).ready(function(){
 
     // game over function
     function gameover(){
+        // replace the attack button with the reset button
         $("#ctrlButton").empty();
         var resetButton = $("<button>");
         resetButton.attr("id", "reset");
         resetButton.text("Reset");
         $("#ctrlButton").append(resetButton);
+        // reset function
         $("#reset").on("click", function() {
             location.reload(true);
         });
+        // change header to Game over and remove vs div
         selHead.text("Game over... Click Reset to play again.")
-        $("#charSel").prepend(selHead);
         $("#versus").remove();
+        // play music depending on who won
+        if ($("#fight div").hasClass("dark")){
+            var audioElement = document.createElement('audio');
+            audioElement.setAttribute("src", "https://archive.org/download/StarWarsTheImperialMarchDarthVadersTheme/Star Wars- The Imperial March (Darth Vader's Theme).mp3");
+            audioElement.play();
+        }
+        else {
+            var audioElement = document.createElement('audio');
+            audioElement.setAttribute("src", "https://archive.org/download/StarWarsJohnWilliamsTheThroneRoomEndTitle/Star Wars - John Williams - The Throne Room End Title.mp3");
+            audioElement.play();
+        };
     };
 
 
@@ -93,7 +106,7 @@ $(document).ready(function(){
         var profileIndex = "p" + Math.floor(Math.random() * 1029);
         var profile = window[$(this).attr("id")];
 
-        // assign the chosen character's attack power increment and health to variables
+        // assign the chosen character's attack power increment and health to variables - note that I wanted to create an equation that would solve for AP given the static HPs and random values for the counter-attack power, but I could not solve the equation for AP
         apInc = profile[profileIndex][0];
         charHP = parseInt($(this).attr("hp"));
 
