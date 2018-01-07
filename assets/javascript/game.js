@@ -1,52 +1,56 @@
 $(document).ready(function(){
-    var lightArray = ["luke", "obi", "yoda"];
-    var lightHealth = [125, 155, 200];
-    var darkArray = ["maul", "vader", "sidious"];
-    var darkHealth = [130, 170, 190];
+    var lightChar = {luke: 125, obi: 155, yoda: 200};
+    var darkChar = {maul: 130, vader: 170, sidious: 190};
     var ap = 0;
     var ca;
     var apInc;
     var charHP;
     var oppoHP;
+    var charDiv;
 
-    // function to display the light side characters
-    function displayLight(){
-        for(var i = 0; i < lightArray.length; i +=1){
+    // function to display the characters
+    function displayChar(characters, side){
+        // characters = lightChar or darkChar
+        // side = "light" or "dark"
+        for (var key in characters){
             // create the div to house the image and health
-            var lightDiv = $("<div>");
-            lightDiv.attr("id", lightArray[i]);
-            lightDiv.attr("class", "col-md-4 select light");
-            lightDiv.attr("hp", lightHealth[i]);
-            $("#lightRow").append(lightDiv);
+            var div = $("<div>");
+            div.attr("id", key)
+            div.attr("class", "col-md-4 select " + side);
+            div.attr("hp", characters[key]);
+            $("#" + side + "Row").append(div);
             // append the HP for each character
-            var lightHP = $("<p>");
-            lightHP.text("HP: " + lightHealth[i]);
-            $("#" +lightArray[i]).append(lightHP);
+            var HP = $("<p>");
+            HP.text("HP: " + characters[key]);
+            $("#" + key).append(HP);
             // append the character image
-            var lightChar = $("<img>");
-            lightChar.attr("src", "assets/images/" + lightArray[i] + ".png");
-            $("#" + lightArray[i]).append(lightChar);
+            var img = $("<img>");
+            img.attr("src", "assets/images/" + key + ".png");
+            $("#" + key).append(img);
         };
+
     };
 
-    // function to display the dark side characters
-    function displayDark(){
-        for(var i = 0; i < darkArray.length; i +=1){
-            // create the div to house the image and health
-            var darkDiv = $("<div>");
-            darkDiv.attr("id", darkArray[i]);
-            darkDiv.attr("class", "col-md-4 select dark")
-            darkDiv.attr("hp", darkHealth[i]);
-            $("#darkRow").append(darkDiv);
-            // append the HP for each character
-            var darkHP = $("<p>");
-            darkHP.text("HP: " + darkHealth[i]);
-            $("#" + darkArray[i]).append(darkHP);
-            // append the character image
-            var darkChar = $("<img>");
-            darkChar.attr("src", "assets/images/" + darkArray[i] + ".png");
-            $("#" + darkArray[i]).append(darkChar);
+    // character selection function
+    function fighterSel(div, health, that){
+        // creates, assigns attributes, and appends the div to house the character
+        charDiv = $("<div>");
+        charDiv.attr("id", div)
+        charDiv.attr("class", $(that).attr("class") + " fighter");
+        charDiv.removeClass("select");
+        charDiv.attr("hp", health);
+        if (div === "oppoDiv"){
+            charDiv.attr("ca", $(that).attr("ca"));
         };
+        $("#fight").append(charDiv);
+        // append the character health to the div created above
+        var charHealth = $("<p>");
+        charHealth.text("HP: " + health);
+        $("#" + div).append(charHealth);
+        // append the character image to the div created above
+        var charSel = $("<img>");
+        charSel.attr("src", "assets/images/" + $(that).attr("id") + ".png");
+        $("#" + div).append(charSel);
     };
 
     // game over function
@@ -61,22 +65,24 @@ $(document).ready(function(){
         $("#reset").on("click", function() {
             location.reload(true);
         });
-        // change header to Game over and remove vs div
-        selHead.text("Game over... Click Reset to play again.")
+        // change header and remove "vs." div and results
+        $("#fighting").text("Game over... Click Reset to play again.");
         $("#versus").remove();
-        // play music depending on who won
+        $("#results p:last").remove();
+        // play music and display victory message depending on who won
         if ($("#fight div").hasClass("dark")){
-            var audioElement = document.createElement('audio');
+            var audioElement = document.createElement("audio");
             audioElement.setAttribute("src", "https://archive.org/download/StarWarsTheImperialMarchDarthVadersTheme/Star Wars- The Imperial March (Darth Vader's Theme).mp3");
             audioElement.play();
+            $("#results p:first").text("The empire has destroyed the jedi and is now free to rule with an iron fist!");
         }
         else {
-            var audioElement = document.createElement('audio');
+            var audioElement = document.createElement("audio");
             audioElement.setAttribute("src", "https://archive.org/download/StarWarsJohnWilliamsTheThroneRoomEndTitle/Star Wars - John Williams - The Throne Room End Title.mp3");
             audioElement.play();
+            $("#results p:first").text("The jedi have overcome the Dark Side and are now free to usher in a new age of freedom and justice!");
         };
     };
-
 
     // add the initial headings and available characters
     var selHead = $("<h2>");
@@ -87,13 +93,13 @@ $(document).ready(function(){
     lightHead.attr("id", "lightChar");
     lightHead.text("Light Side");
     $("#lightRow").append(lightHead);
-    displayLight();
+    displayChar(lightChar, "light");
 
     var darkHead = $("<h3>");
     darkHead.attr("id", "darkChar");
     darkHead.text("Dark Side");
     $("#darkRow").append(darkHead);
-    displayDark();
+    displayChar(darkChar, "dark");
 
     $(".select").on("click", function() {
         // add the fighting location
@@ -111,47 +117,31 @@ $(document).ready(function(){
         charHP = parseInt($(this).attr("hp"));
 
         // add the selected character to the fighting location
-        // create the div to house the chosen character
-        var charDiv = $("<div>");
-        charDiv.attr("id", "charDiv")
-        charDiv.attr("class", $(this).attr("class") + " fighter");
-        charDiv.removeClass("select");
-        charDiv.attr("hp", charHP);
-        $("#fight").append(charDiv);
-        // append the character health
-        var charHealth = $("<p>");
-        charHealth.text("HP: " + charHP);
-        $("#charDiv").append(charHealth);
-        // append the character image
-        var charSel = $("<img>");
-        charSel.attr("id", "character");
-        charSel.attr("src", "assets/images/" + $(this).attr("id") + ".png");
-        $("#charDiv").append(charSel);
+        fighterSel("charDiv", charHP, this);
 
         // empty the character selection location
-        $("#charSel").empty();
         $("#lightRow").empty();
         $("#darkRow").empty();
 
-        selHead = $("<h2>");
-        selHead.text("Select your opponent");
-        $("#charSel").append(selHead);
+        $("#charSel h2").text("Select your opponent");
 
-        // add available opponents w/ counterattack attribute
+        // add available opponents w/ counterattack attribute to the selection location
         if (charDiv.hasClass("dark")){
-            displayLight();
-            for (var i = 0; i < lightArray.length; i += 1){
-                $("#" + lightArray[i]).attr("ca", i + 1);
+            displayChar(lightChar, "light");
+            var i = 0;
+            for (var key in lightChar){
+                $("#" + key).attr("ca", i += 1);
             };
         }
         else {
-            displayDark();
-            for (var i = 0; i < darkArray.length; i += 1){
-                $("#" + darkArray[i]).attr("ca", i + 1);
+            displayChar(darkChar, "dark");
+            var i = 0;
+            for (var key in darkChar){
+                $("#" + key).attr("ca", i += 1);
             };
         };
 
-        // add the separator between the fighters
+        // add the "vs." separator between the fighters
         var vs = $("<div>");
         vs.text("vs.");
         vs.attr("id", "versus");
@@ -159,7 +149,8 @@ $(document).ready(function(){
         $("#fight").append(vs);
 
         // select the opponent
-        $(".select").on("click", function() {
+        $(".select").on("click", function(){
+            // stop selection of more than one opponent
             var numberFighters;
             $("#fight").each(function(){
                 numberFighters = $(".fighter", this).length;
@@ -171,24 +162,11 @@ $(document).ready(function(){
                 // assign the opponents counterattack value and health to variables
                 ca = profile[profileIndex][parseInt($(this).attr("ca"))];
                 oppoHP = parseInt($(this).attr("hp"));
-                // create the div to house the chosen opponent
-                var oppoDiv = $("<div>");
-                oppoDiv.attr("id", "oppoDiv")
-                oppoDiv.attr("class", $(this).attr("class") + " fighter");
-                oppoDiv.removeClass("select");
-                oppoDiv.attr("hp", oppoHP);
-                oppoDiv.attr("ca", $(this).attr("ca"));
-                $("#fight").append(oppoDiv);
-                // append the opponent health
-                var oppoHealth = $("<p>");
-                oppoHealth.text("HP: " + oppoHP);
-                $("#oppoDiv").append(oppoHealth);
-                // append the opponent image to the fighting location and remove the opponent div from the selecting location
-                var oppoSel = $("<img>");
-                oppoSel.attr("id", "opponent");
-                oppoSel.attr("src", "assets/images/" + $(this).attr("id") + ".png");
-                $("#oppoDiv").append(oppoSel);
+                // add the selected opponent to the fighting location
+                fighterSel("oppoDiv", oppoHP, this);
+                // remove the selected opponent from the selection location
                 $("#"+$(this).attr("id")).remove();
+                $("#charSel h2").text("Click Attack to fight your opponent");
             };
         });
 
@@ -219,11 +197,10 @@ $(document).ready(function(){
                 if (oppoHP <= 0){
                     alert("You Won!");
                     $("#oppoDiv").remove();
-                    selHead.text("Select your next Opponent");
-                    $("#charSel").prepend(selHead);
-                    // check to see if you have defeated all the opponents
+                    $("#charSel h2").text("Select your next opponent");
                     var numberOpponents = $(".select").length;
                     if (numberOpponents === 0){
+                        $("#charSel h2").text("Victory!");
                         gameover();
                     };
                 }
@@ -237,6 +214,7 @@ $(document).ready(function(){
                     if (charHP <= 0){
                         alert ("You Lost!");
                         $("#charDiv").remove();
+                        $("#charSel h2").text("Defeat!");
                         gameover();
                     };
                 };
